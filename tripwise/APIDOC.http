@@ -1,0 +1,62 @@
+#api call for create user
+###
+POST http://127.0.0.1:8000/api/register/
+Content-Type: application/json
+
+{
+    "username":"react",
+    "email":"react@gmail.com",
+    "password":"password@123"
+}
+
+#api call for listing trip
+###
+GET  http://127.0.0.1:8000/api/trips/
+Accept: application/json
+Authorization: Basic django:password@123
+
+#api call for adding members
+###
+POST http://127.0.0.1:8000/api/trips/
+Content-Type: application/json
+Authorization: Basic django:password@123
+
+{
+    "title":"ooty",
+    "destination":"ooty",
+    "start_date":"2026-08-20"
+}
+
+#api call for retrive tripmaster
+###
+GET http://127.0.0.1:8000/api/trips/1
+Accept: application/json
+Authorization: Basic django:password@123
+
+#api call for updating
+###
+PUT http://127.0.0.1:8000/api/trips/1/
+Content-Type: application/json
+Authorization: Basic django:password@123
+
+{
+    "title":"college trip",
+    "destination":"humbi",
+    "start_date":"2026-08-13"
+}
+
+#api call for delete
+###
+DELETE http://127.0.0.1:8000/api/trips/2
+Accept: application/json
+Authorization: Basic django:password@123
+
+#api call for adding member
+###
+POST http://127.0.0.1:8000/api/trips/2/member
+Content-Type: application/json
+Authorization: Basic react:password@123
+
+{
+    "member":2
+}
