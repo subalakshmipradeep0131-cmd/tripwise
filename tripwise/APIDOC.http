@@ -4,8 +4,8 @@ POST http://127.0.0.1:8000/api/register/
 Content-Type: application/json
 
 {
-    "username":"react",
-    "email":"react@gmail.com",
+    "username":"anu",
+    "email":"anu@gmail.com",
     "password":"password@123"
 }
 
@@ -29,8 +29,8 @@ Authorization: Basic django:password@123
 
 #api call for retrive tripmaster
 ###
-GET http://127.0.0.1:8000/api/trips/1
-Accept: application/json
+GET http://127.0.0.1:8000/api/trips/2/
+Accept: application/json/
 Authorization: Basic django:password@123
 
 #api call for updating
@@ -60,3 +60,46 @@ Authorization: Basic react:password@123
 {
     "member":2
 }
+
+#api call for listing expenses
+###
+GET http://127.0.0.1:8000/api/trips/1/expenses/
+Accept: application/json
+Authorization: Basic anu:password@123 
+
+#api call for adding expenses
+###
+POST http://127.0.0.1:8000/api/trips/1/expenses/
+Content-Type: application/json
+Authorization: Basic django:password@123 
+
+{
+    "title":"diner",
+    "description":"diner",
+    "amount":1500
+}
+
+#api call for retriving
+###
+GET http://127.0.0.1:8000/api/expenses/2
+Accept: application/json
+Authorization: Basic django:password@123
+
+#api call for delete
+###
+DELETE http://127.0.0.1:8000/api/expenses/1
+Accept: application/json
+Authorization: Basic django:password@123
+
+#api call for updating
+###
+PUT http://127.0.0.1:8000/api/expenses/1
+Content-Type: application/json
+Authorization: Basic django:password@123
+
+{
+    "title":"breakfast",
+    "description":"evening breakfast",
+    "amount":250
+}
+

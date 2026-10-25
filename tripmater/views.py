@@ -5,10 +5,10 @@ from rest_framework.views import APIView
 from tripmater.serializer import userserilizer
 from rest_framework.response import Response
 from rest_framework import authentication,permissions
-from tripmater.models import Trip,TripMember
-from tripmater.serializer import TripSerializer,User,TripMember,TripMemberSerilizer
+from tripmater.models import Trip,TripMember,Expense
+from tripmater.serializer import TripSerializer,User,TripMember,TripMemberSerilizer,ExpenseSerializer
 from rest_framework import serializers
-from tripmater.permission import owneronly
+from tripmater.permission import owneronly,Memberonly
 
 class SignupView(APIView):
     def post(self,request):
@@ -102,6 +102,56 @@ class AddMemberview(APIView):
         # TripMember.objects.create(trip=trip_object,member=user_object)
 
         # return Response(data={"message":"member added..."})
+
+
+class Expenselistcreateview(APIView):
+    authentication_classes =[authentication.BasicAuthentication]
+    permission_classes = [Memberonly]
+
+    def get(self,request,pk):
+        self.check_permissions(request)
+        trip_id=pk
+        trip_object=get_object_or_404(Trip,id=trip_id)
+        qs=Expense.objects.filter(trip=trip_object)
+        serilizer_instance=ExpenseSerializer(qs,many=True)
+        return Response(data=serilizer_instance.data)
+
+    def post(self,request,pk):
+        trip_object= get_object_or_404(Trip,id=pk)
+        form_data= request.data
+        self.check_permissions(request)
+        serilizer_instance= ExpenseSerializer(data=form_data)
+        if serilizer_instance.is_valid():
+            serilizer_instance.save(paid_by=request.user,trip=trip_object)
+            return Response(data=serilizer_instance.data)
+        else:
+            return Response(data=serilizer_instance.errors)
+
+
+class ExpenseRetriveUpdateDeleteView(APIView):
+    authentication_classes=[authentication.BasicAuthentication]
+    permission_classes=[permissions.IsAuthenticated]
+
+    def get(self,request,pk):
+        qs=get_object_or_404(Expense,id=pk)
+        serilizer_instance=ExpenseSerializer(qs)
+        return Response(data=serilizer_instance.data)
+
+    def delete(self,request,pk):
+        Expense.objects.filter(id=pk).delete()
+        return Response (data={"message deleted...."})
+
+
+    def put(self,request,pk):
+        form_data=request.data
+        serilizer_instance= ExpenseSerializer(data=form_data)
+        if serilizer_instance.is_valid():
+            cleaned_data=serilizer_instance.validated_data
+            Expense.objects.filter(id=pk).update(**cleaned_data)
+            return Response(data=serilizer_instance.data)
+        else:
+            return Response(data=serilizer_instance.errors)
+
           
     
            

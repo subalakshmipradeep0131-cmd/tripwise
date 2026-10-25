@@ -20,6 +20,8 @@ from tripmater.views import SignupView
 from tripmater.views import TripListCreateView
 from tripmater.views import TripRetriveUpdateDeleteView
 from tripmater.views import AddMemberview
+from tripmater.views import Expenselistcreateview
+from tripmater.views import ExpenseRetriveUpdateDeleteView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -27,4 +29,6 @@ urlpatterns = [
     path("api/trips/",TripListCreateView.as_view()),
     path("api/trips/<int:pk>/",TripRetriveUpdateDeleteView.as_view()),
     path("api/trips/<int:pk>/member",AddMemberview.as_view()),
+    path("api/trips/<int:pk>/expenses/",Expenselistcreateview.as_view()),
+    path("api/expenses/<int:pk>",ExpenseRetriveUpdateDeleteView.as_view()),
 ]

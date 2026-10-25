@@ -59,3 +59,54 @@ class TripMember(models.Model):
 
     def __str__(self):
         return f"{self.member.username} - {self.trip.title}"
+
+
+class Expense(models.Model):
+
+    trip = models.ForeignKey(
+        Trip,
+        on_delete=models.CASCADE,
+        related_name="expenses"
+    )
+
+    title = models.CharField(max_length=100)
+
+    description = models.TextField(blank=True)
+
+    amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2
+    )
+
+    paid_by = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="expenses_paid"
+    )
+
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.title
+
+
+
+
+
+
+from django.db.models.signals import post_save
+
+from django.dispatch import receiver
+
+@receiver(post_save,sender=Trip)
+def add_trip_owner(sender,instance,created,**kwargs):
+
+    # instance = trip_object
+
+    if created:
+
+        TripMember.objects.create(trip=instance,member = instance.created_by,role="OWNER")
+    

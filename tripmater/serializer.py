@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from tripmater.models import Trip,TripMember
+from tripmater.models import Trip,TripMember,Expense
+from django.db.models import Sum
 
 class userserilizer(serializers.ModelSerializer):
 
@@ -23,6 +24,8 @@ class TripSerializer(serializers.ModelSerializer):
     created_by=serializers.StringRelatedField(read_only=True)
     member_count=serializers.SerializerMethodField(read_only=True)
     trip_member=serializers.SerializerMethodField(read_only=True)
+    total=serializers.SerializerMethodField(read_only=True)
+    member_total=serializers.SerializerMethodField(read_only=True)
 
     class Meta:
 
@@ -38,14 +41,32 @@ class TripSerializer(serializers.ModelSerializer):
         serializer_instance=TripMemberSerilizer(members,many=True)
         return serializer_instance.data
 
+    def get_total(self,obj):
+        total=Expense.objects.filter(trip=obj).values("amount").aggregate(total=Sum("amount")).get("total")
+        return total
 
-    from django.db.models.signals import post_save
-    from django.dispatch import receiver
+    def get_member_total(self,obj):
+        trip_member_object=TripMember.objects.filter(trip=obj)
+        result=[]
 
-    @receiver(post_save,sender=Trip) 
-    def add_trip_owner(sender,instance,created,**kwargs):
-        if created :
-             TripMember.objects.create(trip=instance,member=instance.created_by,role="OWNER")
+        for t_m_o in trip_member_object:
+            member=t_m_o.member
+            total=Expense.objects.filter(trip=obj,paid_by=member).values("amount").aggregate(total=Sum("amount")).get("total")
+            result.append({"member":member.username,"total":total})
+        return result    
+
+
+class ExpenseSerializer(serializers.ModelSerializer):
+
+    class Meta:
+
+        model= Expense
+        fields= "__all__"
+        read_only_fields = ["id","created_at","updated_at","paid_by","trip"]
+          
+
+
+
 
 
    
